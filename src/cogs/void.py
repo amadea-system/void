@@ -11,6 +11,8 @@ from discord.ext import commands
 
 import eCommands
 import db
+
+from utils.uiElements import BoolPage
 from utils.misc import get_webhook
 
 if TYPE_CHECKING:
@@ -155,6 +157,7 @@ class Void(commands.Cog):
             webhook: discord.Webhook = await get_webhook(self.bot, ch)
         except discord.Forbidden:
             embed = discord.Embed(color=0x000000,
+                                  title="`void` proxy",
                                   description=f"\N{WARNING SIGN} The proxy command requires that `void` has the **Manage Webhooks** permission.\n"
                                               f"\nThis message will be sucked into the void in 20 seconds.")
             await ctx.send(embed=embed, delete_after=20)
@@ -164,22 +167,50 @@ class Void(commands.Cog):
         clean_content = discord.utils.escape_mentions(message)
         await webhook.send(content=clean_content, username=author.display_name, avatar_url=avatar)
 
+    @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
+    @eCommands.group(name="purge",
+                     brief="Purges a channel of 'n' messages.",
+                     examples=['20'],
+                     usage="<Number Of Messages>"
+                     )
+    async def purge(self, ctx: commands.Context, num: int):
+        ch: discord.TextChannel = ctx.channel
+
+        embed = discord.Embed(title="`void` purge", description=f"Are you sure you want to delete the last {num} messages?")
+        confirmation= BoolPage(embed=embed)
+        yes = await confirmation.run(ctx)
+        if yes:
+            try:
+                await ch.purge(limit=num)
+            except discord.Forbidden:
+                embed = discord.Embed(color=0x000000,
+                                      description=f"\N{WARNING SIGN} Could not purge messages! The purge command requires that `void` has the **Manage Messages** and the **Read Message History** permissions.\n"
+                                                  f"\nThis message will be sucked into the void in 20 seconds.")
+                await ctx.send(embed=embed, delete_after=20)
+                return
+
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         """Handles the 'on_message' event."""
-        # check if this is a void channel
-        void_ch = await db.get_void_channel(self.bot.db_pool, message.channel.id)
-        if void_ch is not None and void_ch.enabled:
 
-            # check if it's a webhook msg from void
-            if message.webhook_id is not None:
-                log.info(f"{message.webhook_id}")
-                if message.channel.id in self.bot.webhook_cache.keys() and self.bot.webhook_cache[message.channel.id].id == message.webhook_id:
-                    return  # It's a proxy msg from void. Don't delete.
+        if self.bot.user.id == message.author.id:
+            if len(message.embeds) > 0 and message.embeds[0].title is not None:
+                if message.embeds[0].title == '`void` purge' or message.embeds[0].title == "`void` proxy":
+                    return  # Don't void some of our messages. We can handle that.
 
-            log.info(f"in enabled void channel {void_ch.delete_after}")
-            await message.delete(delay=void_ch.delete_after)
+            # check if this is a void channel
+            void_ch = await db.get_void_channel(self.bot.db_pool, message.channel.id)
+            if void_ch is not None and void_ch.enabled:
+
+                # check if it's a webhook msg from void
+                if message.webhook_id is not None:
+                    log.info(f"{message.webhook_id}")
+                    if message.channel.id in self.bot.webhook_cache.keys() and self.bot.webhook_cache[message.channel.id].id == message.webhook_id:
+                        return  # It's a proxy msg from void. Don't delete.
+
+                await message.delete(delay=void_ch.delete_after)
 
 
 def setup(bot):
