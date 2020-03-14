@@ -191,10 +191,6 @@ class Void(commands.Cog):
                 await ctx.send(embed=embed, delete_after=20)
                 return
 
-    @commands.command(name="crash")
-    async def crash(self, ctx):
-        assert 1 == 0
-
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
