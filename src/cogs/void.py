@@ -84,14 +84,15 @@ class Void(commands.Cog):
         if len(void_channels) > 0:
             msg = ["The following channels are currently configured as void channels:"]
             for void_ch in void_channels:
-                enabled_txt = "enabled" if void_ch.enabled else "Disabled"
-                msg.append(f"<#{void_ch.channel_id}> ({enabled_txt})")
+                enabled_txt = "Yes" if void_ch.enabled else "No"
+                msg.append(f"<#{void_ch.channel_id}>, Enabled: {enabled_txt}, Delete After {void_ch.delete_after} Seconds.")
         else:
             msg = ["There are currently no channels configured as void channels.\n"]
-            embed = discord.Embed(title="Configured Void Channels",
-                                  description="\n".join(msg),
-                                  color=0x000000)
-            await ctx.send(embed=embed)
+
+        embed = discord.Embed(title="Configured Void Channels",
+                              description="\n".join(msg),
+                              color=0x000000)
+        await ctx.send(embed=embed)
 
     @void_ch_conf.command(name="enable", brief="Enables a void channel",
                           examples=["#screammmm", "123456789123456789"])
@@ -190,6 +191,10 @@ class Void(commands.Cog):
                 await ctx.send(embed=embed, delete_after=20)
                 return
 
+    @commands.command(name="crash")
+    async def crash(self, ctx):
+        assert 1 == 0
+
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -200,17 +205,17 @@ class Void(commands.Cog):
                 if message.embeds[0].title == '`void` purge' or message.embeds[0].title == "`void` proxy":
                     return  # Don't void some of our messages. We can handle that.
 
-            # check if this is a void channel
-            void_ch = await db.get_void_channel(self.bot.db_pool, message.channel.id)
-            if void_ch is not None and void_ch.enabled:
+        # check if this is a void channel
+        void_ch = await db.get_void_channel(self.bot.db_pool, message.channel.id)
+        if void_ch is not None and void_ch.enabled:
 
-                # check if it's a webhook msg from void
-                if message.webhook_id is not None:
-                    log.info(f"{message.webhook_id}")
-                    if message.channel.id in self.bot.webhook_cache.keys() and self.bot.webhook_cache[message.channel.id].id == message.webhook_id:
-                        return  # It's a proxy msg from void. Don't delete.
+            # check if it's a webhook msg from void
+            if message.webhook_id is not None:
+                log.info(f"{message.webhook_id}")
+                if message.channel.id in self.bot.webhook_cache.keys() and self.bot.webhook_cache[message.channel.id].id == message.webhook_id:
+                    return  # It's a proxy msg from void. Don't delete.
 
-                await message.delete(delay=void_ch.delete_after)
+            await message.delete(delay=void_ch.delete_after)
 
 
 def setup(bot):

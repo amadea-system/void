@@ -65,7 +65,7 @@ class VBot(commands.Bot):
 
 
     async def set_playing_status(self):
-        activity = discord.Game("{}help | in {} Servers".format(self.command_prefix, len(self.guilds)))
+        activity = discord.Game("{}help | in {} Servers".format(self.command_prefix[0], len(self.guilds)))
         await self.change_presence(status=discord.Status.online, activity=activity)
 
     # endregion
