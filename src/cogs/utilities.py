@@ -24,21 +24,14 @@ from utils.paginator import FieldPages
 import db
 
 if TYPE_CHECKING:
-    from bot import GGBot
+    from bot import VBot
 
 log = logging.getLogger(__name__)
 
 
 class Utilities(commands.Cog):
-    def __init__(self, bot: 'GGBot'):
+    def __init__(self, bot: 'VBot'):
         self.bot = bot
-
-    @commands.is_owner()
-    @commands.cooldown(rate=1, per=10, type=commands.BucketType.default)
-    @commands.guild_only()
-    @commands.command(brief="Owner only test command")
-    async def cogtest(self, ctx: commands.Context):
-        assert 1 == 0
 
     # region Invite Command
     @commands.group(name='invite',
@@ -158,14 +151,11 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
-
-
     # region Permissions Verification Command
     @commands.command(name="permissions",
-                      hidden=True,
                       aliases=["verify_permissions", "perm", "permissions_check", "perm_check", "verify_perm"],
                       brief="Checks for any permissions or configuration problems.",
-                      description="Checks for any possible permission or configuration problems that could interfere with the operations of Gabby Gums",
+                      description="Checks for any possible permission or configuration problems that could interfere with the operations of void",
                       )
     async def verify_permissions(self, ctx: commands.Context, guild_id: Optional[str] = None):
 

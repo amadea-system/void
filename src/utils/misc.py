@@ -1,5 +1,5 @@
 """
-General helper functions for Gabby Gums.
+General helper functions for void.
 Function abilities include:
     Functions for handling long text
 
@@ -90,7 +90,7 @@ def split_text(text: Union[str, List], max_size: int = 2000, delimiter: str = "\
     return output
 
 
-async def log_error_msg(bot: 'GGBot', error_messages: Optional[Union[str, List[str], Exception]], header: Optional[str] = None, code_block: bool = False) -> bool:
+async def log_error_msg(bot: 'VBot', error_messages: Optional[Union[str, List[str], Exception]], header: Optional[str] = None, code_block: bool = False) -> bool:
     """
     Attempts to send a message to the Global Error Discord Channel.
 

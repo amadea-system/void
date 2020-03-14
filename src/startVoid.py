@@ -22,20 +22,20 @@ logging.basicConfig(level=logging.INFO, format="[%(asctime)s] [%(name)s] [%(leve
 
 log = logging.getLogger(__name__)
 
-bot = VBot(command_prefix="v;",
-              description="A bot that consumes all messages.",
-              owner_id=389590659335716867,
-              case_insensitive=True)
+bot = VBot(command_prefix=["v;", "V;"],
+           description="A bot that consumes all messages.",
+           owner_id=389590659335716867,
+           case_insensitive=True)
 
 
 @bot.event
 async def on_ready():
-    logging.info('Connected using discord.py version {}!'.format(discord.__version__))
-    logging.info('Username: {0.name}, ID: {0.id}'.format(bot.user))
-    logging.info("Connected to {} servers.".format(len(bot.guilds)))
-    logging.info('------')
+    log.info('Connected using discord.py version {}!'.format(discord.__version__))
+    log.info('Username: {0.name}, ID: {0.id}'.format(bot.user))
+    log.info("Connected to {} servers.".format(len(bot.guilds)))
+    log.info('------')
 
-    logging.warning("thevoid is fully loaded.")
+    log.warning("thevoid is fully loaded.")
 
 
 # ---- Command Error Handling ----- #
@@ -69,7 +69,7 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_error(event_name, *args):
-    logging.exception("Exception from event {}".format(event_name))
+    log.exception("Exception from event {}".format(event_name))
 
     if 'error_log_channel' not in config:
         return
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     with open('config.json') as json_data_file:
         config = json.load(json_data_file)
-
+    log.info(f"Connecting to DB @: {config['db_uri']}")
     db_pool: asyncpg.pool.Pool = asyncio.get_event_loop().run_until_complete(db.create_db_pool(config['db_uri']))
     asyncio.get_event_loop().run_until_complete(db.create_tables(db_pool))
 
@@ -107,5 +107,5 @@ if __name__ == '__main__':
     bot.load_cogs()
     bot.run(config['token'])
 
-    logging.info("cleaning Up and shutting down")
+    log.info("cleaning Up and shutting down")
 

@@ -112,7 +112,7 @@ class EmbedHelp(dpy_cmds.DefaultHelpCommand):
         # TODO: Move this to the error handler.
         permissions: discord.Permissions = ctx.guild.me.permissions_in(dest)
         if not permissions.embed_links:
-            await dest.send(f"Error! `void` must have the `Embed Links` permission in this channel to continue. Please give Gabby Gums the `Embed Links` permission and try again."
+            await dest.send(f"Error! `void` must have the `Embed Links` permission in this channel to continue. Please give void the `Embed Links` permission and try again."
                             f"\nIf you need assistance, please talk to Amadea System")
             return
 

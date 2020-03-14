@@ -38,7 +38,7 @@ class Void(commands.Cog):
     @commands.guild_only()
     @eCommands.group(name="void_ch", aliases=["void_channel", "vc"], brief="Add, Remove, List and Configure void channels",
                      #description="Sets/unsets/shows the default logging channel.",  # , usage='<command> [channel]'
-                     examples=['list', "add #void-channel", "add 123456789123456789", 'remove #void-channel']
+                     examples=['list', "add #void-channel", "add 123456789123456789", 'remove #void-channel', 'time #vent 2.5']
                      )
     async def void_ch_conf(self, ctx: commands.Context):
         if ctx.invoked_subcommand is None:
@@ -120,7 +120,7 @@ class Void(commands.Cog):
                                   description=f"\N{WARNING SIGN} <#{channel.id}> has not yet been configured as a void channel!\n")
             await ctx.send(embed=embed)
 
-    @void_ch_conf.command(name="time", brief="Sets how long until messages are deleted for a channel",
+    @void_ch_conf.command(name="time", brief="Sets how long until messages are deleted from a channel",
                           examples=["#screammmm 1.4", "123456789123456789 6"])
     async def time_void_ch(self, ctx: commands.Context, channel: discord.TextChannel, seconds: float):
         existing_void_ch_settings = await db.get_void_channel(self.bot.db_pool, channel.id)
