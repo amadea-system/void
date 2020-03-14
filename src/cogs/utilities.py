@@ -108,7 +108,7 @@ class Utilities(commands.Cog):
         await db.get_void_channels_for_guild(self.bot.db_pool, ctx.guild.id)  # test DB speed
         db_end = time.perf_counter()
 
-        embed = discord.Embed(title="Pinging...", description=" \n ")
+        embed = discord.Embed(title="Pinging...", description=" \n ", color=0x000000)
         start = time.perf_counter()
         # Gets the timestamp when the command was used
 
@@ -118,7 +118,7 @@ class Utilities(commands.Cog):
         new_embed = discord.Embed(title="Pong!",
                                   description="Round trip messaging time: **{:.2f} ms**. \nAPI latency: **{:.2f} ms**.\nDatabase latency: **{:.2f} ms**".
                                   format((time.perf_counter() - start) * 1000, self.bot.latency * 1000,
-                                         (db_end - db_start) * 1000))
+                                         (db_end - db_start) * 1000), color=0x000000)
         await msg.edit(embed=new_embed)
 
 
@@ -154,7 +154,7 @@ class Utilities(commands.Cog):
                               description="CPU: **{}%** \nLoad average: **{:.2f}, {:.2f}, {:.2f}**\nMemory: **{:.2f} MB**"
                                           "\nDisk space: **{:.2f} MB Free**, **{:.2f} MB Used**, **{}% Used**\n# of guilds: **{}**".
                               format(psutil.cpu_percent(), load_average[0], load_average[1], load_average[2],
-                                     memory_use, disk_space_free, disk_space_used, disk_space_percent_used, len(self.bot.guilds)))
+                                     memory_use, disk_space_free, disk_space_used, disk_space_percent_used, len(self.bot.guilds)), color=0x000000)
 
         await ctx.send(embed=embed)
 
@@ -184,7 +184,7 @@ class Utilities(commands.Cog):
             return
 
         # ToDO: check for send permissions for ctx and log error if unavailable.
-        perm_embed = discord.Embed(title="Permissions Debug for {}".format(guild.name), color=0x61cd72)
+        perm_embed = discord.Embed(title="Permissions Debug for {}".format(guild.name), color=0x000000)
 
         perms = {'read': [], 'send': [], 'manage_messages': [], 'embed_links': [], "read_msg_history": []}
 
